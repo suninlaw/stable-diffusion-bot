@@ -55,42 +55,6 @@ docker run -d \
 
 ```
 
-## Building (Docker)
-
-(Same as above) 1. Clone this repository
-(Same as above) 2. Install Go  * This varies with your operating system, but the easiest way is to use the official installer: https://golang.org/dl/ 
-3. Run build.sh - this will build a local Docker image called stable-diffusion-bot
-
-## Usage (Docker)
-
-(Same as above) 1. Create a Discord bot and get the token
-(Same as above) 2. Add the Discord bot to your Discord server. It needs permissions to post messages, use slash commands, mentioning anyone, and uploading files.
-(Same as above) 3. Ensure that the Automatic 1111 webui is running with `--api` (and also `--listen` if it is running on a different computer than the bot).
-4. Create an empty database file
-
-```bash
-touch /path/to/sd_discord_bot.sqlite
-
-```
-
-5. Run the bot with the following docker command.
-
-```bash
-docker run -d \
-  --name=stable-diffusion-bot \
-  -v /path/to/sd_discord_bot.sqlite:/usr/src/bot/sd_discord_bot.sqlite:rw \
-  -e TOKEN="insert the token here from step 1" \
-  -e GUILD="insert the guild ID" \
-  -e HOST="insert webui host, e.g. http://127.0.0.1:7860" \
-  --restart unless-stopped \
-  stable-diffusion-bot
-
-```
-
-6. The first run will generate a new SQLite DB file in the current working directory.
-
-The `-imagine <new command name>` flag can be used to have the bot use a different command when running, so that it doesn't collide with a Midjourney bot running on the same Discord server.
-
 ## Commands
 
 ### `/imagine_settings`
