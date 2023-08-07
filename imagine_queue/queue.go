@@ -27,8 +27,8 @@ import (
 const (
 	botID = "bot"
 
-	initializedWidth      = 512
-	initializedHeight     = 512
+	initializedWidth      = 1024
+	initializedHeight     = 1024
 	initializedBatchCount = 4
 	initializedBatchSize  = 1
 )

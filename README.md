@@ -2,27 +2,18 @@
 
 This is a Discord bot that interfaces with the Automatic1111 API, from this project: https://github.com/AUTOMATIC1111/stable-diffusion-webui 
 
+This version is forked from https://github.com/AndBobsYourUncle/stable-diffusion-discord-bot, is optimized for SDXL, and includes scripts and instructions for using it in a Docker container.
+
 Video showing off the current features:
 https://www.youtube.com/watch?v=of5MBh3ueMk
 
-## Installation
-
-1. Download the appropriate version for your system from the releases page: https://github.com/AndBobsYourUncle/stable-diffusion-discord-bot/releases
-   1. Windows users will need to use the windows-amd64 version
-   2. Intel Macs will need to use the darwin-amd64 version
-   3. M1 Macs will need to use the darwin-arm64 version
-   4. Devices like a Raspberry Pi will need to use the linux-arm64 version
-   5. Most other Linux devices will need to use the linux-amd64 version
-2. Extract the archive folder to a location of your choice
-
-## Building (optional, only if you want to build from source)
+## Building
 
 1. Clone this repository
-2. Install Go 
-   * This varies with your operating system, but the easiest way is to use the official installer: https://golang.org/dl/ 
+2. Install Go  * This varies with your operating system, but the easiest way is to use the official installer: https://golang.org/dl/ 
 3. Build the bot with `go build`
 
-## Usage
+## Usage 
 
 1. Create a Discord bot and get the token
 2. Add the Discord bot to your Discord server. It needs permissions to post messages, use slash commands, mentioning anyone, and uploading files.
@@ -32,6 +23,72 @@ https://www.youtube.com/watch?v=of5MBh3ueMk
    * There needs to be no trailing slash after the port number (which is `7860` in this example). So, instead of `http://127.0.0.1:7860/`, it should be `http://127.0.0.1:7860`.
 5. The first run will generate a new SQLite DB file in the current working directory.
 
+## Building (Docker)
+
+1. (Same as above) Clone this repository
+2. (Same as above) Install Go  * This varies with your operating system, but the easiest way is to use the official installer: https://golang.org/dl/ 
+3. Run build.sh - this will build a local Docker image called stable-diffusion-bot
+
+## Usage (Docker)
+
+1. (Same as above) Create a Discord bot and get the token
+2. (Same as above) Add the Discord bot to your Discord server. It needs permissions to post messages, use slash commands, mentioning anyone, and uploading files.
+3. (Same as above) Ensure that the Automatic 1111 webui is running with `--api` (and also `--listen` if it is running on a different computer than the bot).
+4. Create an empty SQLite DB file
+
+```bash
+touch /path/to/sd_discord_bot.sqlite
+
+```
+
+5. Run the bot with the following docker command.
+
+```bash
+docker run -d \
+  --name=stable-diffusion-bot \
+  -v /path/to/sd_discord_bot.sqlite:/usr/src/bot/sd_discord_bot.sqlite:rw \
+  -e TOKEN="insert the token here from step 1" \
+  -e GUILD="insert the guild ID" \
+  -e HOST="insert webui host, e.g. http://127.0.0.1:7860" \
+  --restart unless-stopped \
+  stable-diffusion-bot
+
+```
+
+## Building (Docker)
+
+(Same as above) 1. Clone this repository
+(Same as above) 2. Install Go  * This varies with your operating system, but the easiest way is to use the official installer: https://golang.org/dl/ 
+3. Run build.sh - this will build a local Docker image called stable-diffusion-bot
+
+## Usage (Docker)
+
+(Same as above) 1. Create a Discord bot and get the token
+(Same as above) 2. Add the Discord bot to your Discord server. It needs permissions to post messages, use slash commands, mentioning anyone, and uploading files.
+(Same as above) 3. Ensure that the Automatic 1111 webui is running with `--api` (and also `--listen` if it is running on a different computer than the bot).
+4. Create an empty database file
+
+```bash
+touch /path/to/sd_discord_bot.sqlite
+
+```
+
+5. Run the bot with the following docker command.
+
+```bash
+docker run -d \
+  --name=stable-diffusion-bot \
+  -v /path/to/sd_discord_bot.sqlite:/usr/src/bot/sd_discord_bot.sqlite:rw \
+  -e TOKEN="insert the token here from step 1" \
+  -e GUILD="insert the guild ID" \
+  -e HOST="insert webui host, e.g. http://127.0.0.1:7860" \
+  --restart unless-stopped \
+  stable-diffusion-bot
+
+```
+
+6. The first run will generate a new SQLite DB file in the current working directory.
+
 The `-imagine <new command name>` flag can be used to have the bot use a different command when running, so that it doesn't collide with a Midjourney bot running on the same Discord server.
 
 ## Commands
@@ -40,7 +97,7 @@ The `-imagine <new command name>` flag can be used to have the bot use a differe
 
 Responds with a message that has buttons to allow updating of the default settings for the `/imagine` command.
 
-By default, the size is 512x512. However, if you are running the Stable Diffusion 2.0 768 model, you might want to change this to 768x768.
+By default, the size is 1024x1024, the recommended resolution for Stable Diffusion XL. However, if you are not running the Stable Diffusion XL model, you might want to change this to 768x768 or 512x512.
 
 Choosing an option will cause the bot to update the setting, and edit the message in place, allowing further edits.
 
@@ -75,26 +132,3 @@ All image generations are saved into a local SQLite database, so that the parame
 Options like aspect ratio are extracted and sanitized from the text prompt, and then the resulting options are stored in the database record for the image generation (for further variations or upscaling):
 
 <img width="995" alt="Screenshot 2022-12-28 at 4 30 43 PM" src="https://user-images.githubusercontent.com/7525989/209888645-b616fbb1-955a-4d3e-9a25-ce43baa6cfbd.png">
-
-## Contributing
-
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
-There are lots more features that could be added to this bot, such as:
-
-- [x] Moving defaults to the database
-- [ ] Per-user defaults/settings, as well as enforcing limits on a user's usage of the bot
-- [x] Ability to easily re-roll an image
-- [x] Generating multiple images at once
-- [x] Ability to upscale the resulting images
-- [x] Ability to generate variations on a grid image
-- [ ] Ability to tweak more settings when issuing the `/imagine` command (like aspect ratio)
-- [ ] Image to image processing
-
-I'll probably be adding a few of these over time, but any contributions are also welcome.
-
-## Why Go?
-
-I like Go a lot better than Python, and for me it's a lot easier to maintain dependencies with Go modules versus running a bunch of different Anaconda environments.
-
-It's also able to be cross-compiled to a wide range of platforms, which is nice.
